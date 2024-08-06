@@ -1,3 +1,21 @@
+import { privateKeyToAccount } from "viem/accounts";
+import {
+  ENTRYPOINT_ADDRESS_V07,
+  createSmartAccountClient,
+} from "permissionless";
+import { signerToSafeSmartAccount } from "permissionless/accounts";
+import {
+  createPimlicoBundlerClient,
+  createPimlicoPaymasterClient,
+} from "permissionless/clients/pimlico";
+import { createPublicClient, getContract, http, parseEther } from "viem";
+import { fuseSparknet } from "viem/chains";
+import { erc7579Actions } from "permissionless/actions/erc7579";
+
+const privateKey =
+  "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+const apiKey = process.env.NEXT_PUBLIC_API_KEY!;
+
 const pimlicoUrl = `https://api.pimlico.io/v2/fuse-sparknet/rpc?apikey=${apiKey}`;
 const safe4337ModuleAddress = "0x27b102239a4082fcc1b4e9abe2349fa88156f78b";
 const erc7569LaunchpadAddress = "0xdfc1999aa9a0af2e8670099c8e80cd4c6e1da259";
@@ -50,9 +68,12 @@ export const getSmartAccountClient = async () => {
   return smartAccountClient as SafeSmartAccountClient;
 };
 
-const safeAccount = await getSmartAccountClient();
+export const testFlow = async () => {
+  console.log("API_KEY", apiKey);
 
-export const sendTransaction = async () => {
+  console.log("starting...");
+  const safeAccount = await getSmartAccountClient();
+  console.log("safeAccount", safeAccount);
   const opHash = await safeAccount.sendTransaction({
     to: "0x7Ceabc27B1dc6A065fAD85A86AFBaF97F7692088",
     value: 0n,
