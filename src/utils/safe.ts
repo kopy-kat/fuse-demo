@@ -22,7 +22,8 @@ const safeSingletonAddress = "0xc7a5a28849d7309d7e97ae398c798a9c82db4138";
 const safeProxyFactoryAddress = "0x4340Fc630a69508F9aAc5DbF6da48f9603C4a222";
 const multiSendAddress = "0x3e68939EB7a5eF1bfac22Cd465F41E66b44FB08E";
 
-const privateKey = generatePrivateKey();
+const privateKey =
+  "0x9c203f0d48189d0c1a57a556f0a09fd07d7464ea15a9d3c4bcc545204724a36e";
 const signer = privateKeyToAccount(privateKey);
 
 const publicClient = createPublicClient({
@@ -67,7 +68,6 @@ export const getSmartAccountClient = async () => {
       gasPrice: async () => {
         return (await pimlicoBundlerClient.getUserOperationGasPrice()).fast;
       },
-      sponsorUserOperation: pimlicoBundlerClient.sponsorUserOperation,
     },
   }).extend(erc7579Actions({ entryPoint: ENTRYPOINT_ADDRESS_V07 }));
 
