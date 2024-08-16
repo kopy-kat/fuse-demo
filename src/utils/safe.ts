@@ -5,7 +5,10 @@ import {
   getAccountNonce,
 } from "permissionless";
 import { signerToSafeSmartAccount } from "permissionless/accounts";
-import { createPimlicoBundlerClient } from "permissionless/clients/pimlico";
+import {
+  createPimlicoBundlerClient,
+  createPimlicoPaymasterClient,
+} from "permissionless/clients/pimlico";
 import { Address, createPublicClient, http, pad, PublicClient } from "viem";
 import { fuseSparknet } from "viem/chains";
 import { erc7579Actions } from "permissionless/actions/erc7579";
@@ -20,7 +23,7 @@ const safeSingletonAddress = "0xc7a5a28849d7309d7e97ae398c798a9c82db4138";
 const safeProxyFactoryAddress = "0x4340Fc630a69508F9aAc5DbF6da48f9603C4a222";
 
 const privateKey =
-  "0x9c203f0d48189d0c1a57a556f0a09fd07d7464ea15a9d3c4bcc545204724a36e";
+  "0x9c203f0d48189d0c1a57a556f0a09fd07d7464ea15a9d3c4bcc545204724a36d";
 const signer = privateKeyToAccount(privateKey);
 
 const publicClient = createPublicClient({
@@ -31,6 +34,11 @@ const pimlicoBundlerClient = createPimlicoBundlerClient({
   transport: http(pimlicoUrl, { timeout: 100_000 }),
   entryPoint: ENTRYPOINT_ADDRESS_V07,
 }).extend(pimlicoPaymasterActions(ENTRYPOINT_ADDRESS_V07));
+
+const paymasterClient = createPimlicoPaymasterClient({
+  transport: http(pimlicoUrl),
+  entryPoint: ENTRYPOINT_ADDRESS_V07,
+});
 
 export const getSmartAccountClient = async () => {
   const account = await signerToSafeSmartAccount(publicClient, {
@@ -56,6 +64,7 @@ export const getSmartAccountClient = async () => {
       gasPrice: async () => {
         return (await pimlicoBundlerClient.getUserOperationGasPrice()).fast;
       },
+      sponsorUserOperation: paymasterClient.sponsorUserOperation,
     },
   }).extend(erc7579Actions({ entryPoint: ENTRYPOINT_ADDRESS_V07 }));
 
